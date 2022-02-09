@@ -1,23 +1,28 @@
 import React from 'react'
 import styled from 'styled-components'
 import Flex from 'components/shared/Flex'
-import { getLoginSession } from 'lib/auth'
-import ProjectList from 'components/projects/ProjectList'
+import { getLoginSession } from 'lib/auth/auth'
+import { useLeagues } from 'lib/hooks'
+// import ProjectList from 'components/projects/ProjectList'
 
 const Container = styled(Flex)`
   width: 100%;
 `
 
-export default function Home({ userId }) {
+export default function Home({ userEmail }) {
+  const { leagues } = useLeagues()
 
   return (
     <Container dir='column' ai='center'>
+      <div>{userEmail}</div>
+
       <div className="std-div alt-bg w-100 mtb-s">
         <Flex jc='center' className='bg std-div w-100'>
-          <h2>my projects</h2>
+          <h2>all leagues</h2>
         </Flex>
       </div>
-      <ProjectList userId={userId} />
+
+      {/* <ProjectList userId={userId} /> */}
     </Container>
   )
 }
@@ -27,7 +32,7 @@ export async function getServerSideProps({ req, res }) {
     const session = await getLoginSession(req, 'auth_cookie_name')
     return {
       props: {
-        userId: session.userId
+        userEmail: session.email
       },
     }
   } catch {

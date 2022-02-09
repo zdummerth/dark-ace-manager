@@ -1,13 +1,8 @@
-import React, { useState } from 'react'
+import React from 'react'
 import Link from "next/link"
-import { useRouter } from 'next/router'
 import styled from 'styled-components'
-import { Home, User, Message } from '@styled-icons/boxicons-regular'
+import { Home, User } from '@styled-icons/boxicons-regular'
 import Flex from 'components/shared/Flex'
-import { useInvites } from 'lib/hooks'
-import { Received } from 'components/invites/InviteList'
-import Invite from 'components/invites/Invite'
-import { BlankButton } from 'components/shared/Button'
 
 const Nav = styled(Flex)`
   position: relative;
@@ -28,17 +23,7 @@ const Nav = styled(Flex)`
   }
 `
 
-const InviteBtn = styled(BlankButton)`
-  border: ${({ theme, active }) => active ? `1px solid ${theme.colors.brand}` : 'none'};
-`
-
 const Navigation = () => {
-  const { invites, acceptInvite, updating, deleteInvite } = useInvites()
-  const [showInvites, setShowInvites] = useState(false)
-
-  const rInvites = invites ? invites.receivedInvites.data : []
-  const sInvites = invites ? invites.sentInvites.data : []
-
   // console.log('invites', invites)
   return (
     <Nav ai='center' className='bg w-100'>
@@ -56,22 +41,6 @@ const Navigation = () => {
           </Flex>
         </a>
       </Link>
-      <InviteBtn
-        onClick={() => setShowInvites(!showInvites)}
-        active={rInvites.length > 0}
-      >
-        <Flex ai='center' className='std-div bg'>
-          <Message size='20' />
-        </Flex>
-      </InviteBtn>
-      {showInvites && (
-        <Flex dir='column' ai='stretch' className='invite-container std-div alt-bg'>
-          <Flex dir='column' ai='stretch'>
-            {rInvites.length === 0 ? <i>you don't have any invites</i>: <i>invites</i>}
-            <Received />
-          </Flex>
-        </Flex>
-      )}
     </Nav>
   )
 }

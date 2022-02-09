@@ -1,45 +1,43 @@
 type Account {
     email: String! @unique
-    user: User
 }
 
-type User {
-    projects: [Project] @relation(name: "project_member")
-    managedProjects: [Project] @relation(name: "project_manager")
-    receivedInvites: [Invite] @relation(name: "invite_recipient")
-    sentInvites: [Invite] @relation(name: "invite_sender")
-    tasks: [Task] @relation
-    handle: String @unique
-    account: Account
+enum PaymentStatusOptions {
+    cash
+    paypal
+    venmo
+    card
+    online
+    unpaid
+}
+type Player {
+    firstName: String
+    lastName: String
+    email: String
+    phone: String
+    leagues: [LeaguePlayer] @relation
 }
 
-type Project {
-    tasks: [Task] @relation
-    manager: User! @relation(name: "project_manager")
-    members: [User] @relation(name: "project_member")
-    title: String
+type Team {
+    players: [LeaguePlayer] @relation
+    league: League
 }
 
-type Invite {
-    project: Project
-    to: User! @relation(name: "invite_recipient")
-    from: User! @relation(name: "invite_sender")
+type League {
+    date: Date
+    players: [LeaguePlayer] @relation
+    teams: [Team] @relation
 }
 
-enum TaskStatus {
-    done
-    todo
-    doing
-}
-
-type Task {
-    status: TaskStatus
-    project: Project
-    title: String
-    assignedTo: [User] @relation
+type LeaguePlayer {
+    league: League
+    player: Player
+    team: Team
+    payment: PaymentStatusOptions
+    checkedIn: Boolean
+    wins: Int
 }
 
 type Query {
-    allProjects: [Project]
-    allUsers: [User]
+    allLeagues: [League]
 }

@@ -1,10 +1,10 @@
-import { createInvite, deleteInvite, acceptInvite } from 'lib/fauna'
+import { createInvite, deleteInvite, acceptInvite } from 'lib/db/league-player'
 import { getLoginSession } from 'lib/auth'
 
 export default async function handler(req, res) {
-    console.log('in invite function', req.query)
+    console.log('in league player function')
     console.log('method: ', req.method)
-    console.log('body: ', req.body)
+    // console.log('body: ', req.body)
 
     try {
         const session = await getLoginSession(req, 'auth_cookie_name')

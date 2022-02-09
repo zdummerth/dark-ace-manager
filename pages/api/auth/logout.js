@@ -1,7 +1,7 @@
 import { getLoginSession } from 'lib/auth'
 import { logout } from 'lib/fauna'
-import { removeTokenCookie } from 'lib/auth-cookies'
-import { magic } from 'lib/magicAdmin'
+import { removeTokenCookie } from 'lib/auth/auth-cookies'
+import { magic } from 'lib/auth/magicAdmin'
 
 
 export default async function handler(req, res) {
