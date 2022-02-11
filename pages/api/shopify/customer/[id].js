@@ -1,5 +1,5 @@
 
-import { getLoginSession } from 'lib/auth'
+import { getLoginSession } from 'lib/auth/auth'
 import Shopify from "@shopify/shopify-api"
 
 export default async function handler(req, res) {

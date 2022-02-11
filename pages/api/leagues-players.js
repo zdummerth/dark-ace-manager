@@ -1,4 +1,4 @@
-import { create, get, getAll } from 'lib/db/league-players'
+import { create, get, getAll } from 'lib/db/league-player'
 import { getLoginSession } from 'lib/auth/auth'
 
 export default async function handler(req, res) {

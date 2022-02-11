@@ -1,5 +1,5 @@
-import { getLoginSession } from 'lib/auth'
-import { logout } from 'lib/fauna'
+import { getLoginSession } from 'lib/auth/auth'
+import { logout } from 'lib/db/auth'
 import { removeTokenCookie } from 'lib/auth/auth-cookies'
 import { magic } from 'lib/auth/magicAdmin'
 
