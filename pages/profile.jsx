@@ -1,7 +1,7 @@
 import LogoutButton from 'components/forms/LogoutButton'
 import { BlankButton } from 'components/shared/Button'
 import Flex from 'components/shared/Flex'
-import { getLoginSession } from 'lib/auth'
+import { getLoginSession } from 'lib/auth/auth'
 
 import styled from 'styled-components'
 

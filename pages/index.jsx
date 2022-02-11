@@ -1,8 +1,9 @@
 import React from 'react'
 import styled from 'styled-components'
+import Link from 'next/link'
 import Flex from 'components/shared/Flex'
 import { getLoginSession } from 'lib/auth/auth'
-import { useLeagues } from 'lib/hooks'
+import { useLeagues, useShopifyCustomerMutations } from 'lib/hooks'
 // import ProjectList from 'components/projects/ProjectList'
 
 const Container = styled(Flex)`
@@ -11,6 +12,7 @@ const Container = styled(Flex)`
 
 export default function Home({ userEmail }) {
   const { leagues } = useLeagues()
+  const { registerWebhook } = useShopifyCustomerMutations()
 
   return (
     <Container dir='column' ai='center'>
@@ -21,6 +23,23 @@ export default function Home({ userEmail }) {
           <h2>all leagues</h2>
         </Flex>
       </div>
+      <button onClick={registerWebhook}>
+        register webhook
+      </button>
+      {leagues && leagues.map(l => {
+        return (
+          <Link href={`/league/${l._id}`}>
+            <a>
+              <div className="std-div alt-bg w-100 mtb-s">
+                <Flex jc='center' className='bg std-div w-100'>
+                  <h5>{l.date}</h5>
+                </Flex>
+              </div>
+            </a>
+          </Link>
+
+        )
+      })}
 
       {/* <ProjectList userId={userId} /> */}
     </Container>

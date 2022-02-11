@@ -1,13 +1,12 @@
-import { create, get, getAll } from 'lib/db/leagues'
+import { getAllCustomers, create } from "lib/db/customers"
 import { getLoginSession } from 'lib/auth/auth'
 
 export default async function handler(req, res) {
-    console.log('in leagues function')
-    // console.log('method: ', req.method)
-    // console.log('body: ', req.body)
+    console.log('in shopify customers function')
 
     try {
         const session = await getLoginSession(req, 'auth_cookie_name')
+
 
         let data
         switch (req.method) {
@@ -25,11 +24,11 @@ export default async function handler(req, res) {
                 break;
             }
             case 'GET': {
-                const faunares = await getAll({
+                const faunares = await getAllCustomers({
                     secret: session.accessToken,
                 })
 
-                data = faunares.allPuttingLeagues.data
+                data = faunares.getAllCustomers
                 break;
             }
             case 'PUT': {
@@ -43,11 +42,12 @@ export default async function handler(req, res) {
                 throw { msg: "invalid method" }
         }
 
-        console.log('leagues response data', data)
+        // console.log('customers response data', data)
+
         res.status(200).json(data)
 
     } catch (error) {
         console.log('ERROR MOTHERFUCKER: ', error);
-        res.status(400).json({ error })
+        res.status(400).send()
     }
 }

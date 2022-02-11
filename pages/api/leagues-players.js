@@ -1,8 +1,8 @@
-import { create, get, getAll } from 'lib/db/leagues'
+import { create, get, getAll } from 'lib/db/league-players'
 import { getLoginSession } from 'lib/auth/auth'
 
 export default async function handler(req, res) {
-    console.log('in leagues function')
+    // console.log('in leagues function')
     // console.log('method: ', req.method)
     // console.log('body: ', req.body)
 
@@ -29,7 +29,7 @@ export default async function handler(req, res) {
                     secret: session.accessToken,
                 })
 
-                data = faunares.allPuttingLeagues.data
+                data = faunares.allLeagues
                 break;
             }
             case 'PUT': {
@@ -43,7 +43,7 @@ export default async function handler(req, res) {
                 throw { msg: "invalid method" }
         }
 
-        console.log('leagues response data', data)
+        // console.log('leagues response data', data)
         res.status(200).json(data)
 
     } catch (error) {

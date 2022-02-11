@@ -1,9 +1,10 @@
-import { create, remove, update } from 'lib/db/league-player'
+
 import { getLoginSession } from 'lib/auth'
+import Shopify from "@shopify/shopify-api"
 
 export default async function handler(req, res) {
-    console.log('in league player function')
-    console.log('method: ', req.method)
+    console.log('in customer function')
+    // console.log('method: ', req.method)
     // console.log('body: ', req.body)
 
     try {
@@ -11,20 +12,40 @@ export default async function handler(req, res) {
 
         let data
         switch (req.method) {
+            case 'GET': {
+                const client = new Shopify.Clients.Graphql(shopName, shopKey);
+
+                const queryString = `{
+                    customer(id: "gid://shopify/Customer/4103913635993") {
+                      displayName
+                    }
+                  }
+                  `
+
+                const response = await client.query({ data: queryString })
+                if (response.body.errors) {
+                    throw response.body.errors
+                }
+
+                console.log('response', response.body.data.customers.edges)
+
+                data = response.body.data.customers.edges
+                break;
+            }
             case 'POST': {
                 const {
                     toId,
                     projectId,
                 } = req.body
 
-                const faunares = await create({
+                const faunares = await createInvite({
                     toId,
                     fromId: session.userId,
                     projectId,
                     secret: session.accessToken,
                 })
 
-                data = faunares.create
+                data = faunares.createInvite
                 break;
             }
             case 'PUT': {
@@ -32,7 +53,7 @@ export default async function handler(req, res) {
                 // => accept invites is put here to prevent creating seperate api routes
                 const { id } = req.query
 
-                const faunares = await update({
+                const faunares = await acceptInvite({
                     id,
                     secret: session.accessToken,
                 })
@@ -42,12 +63,12 @@ export default async function handler(req, res) {
             }
             case 'DELETE': {
                 const { id } = req.query
-                const faunares = await remove({
+                const faunares = await deleteInvite({
                     id,
                     secret: session.accessToken,
                 })
 
-                data = faunares.remove
+                data = faunares.deleteInvite
                 break;
             }
             default:

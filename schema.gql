@@ -10,34 +10,39 @@ enum PaymentStatusOptions {
     online
     unpaid
 }
-type Player {
-    firstName: String
-    lastName: String
+
+type Customer {
+    shopifyCustomerId: String @unique
+    name: String
     email: String
     phone: String
-    leagues: [LeaguePlayer] @relation
+    acceptsMarketing: Boolean
+    puttingLeaguePlayers: [PuttingLeaguePlayer] @relation
 }
 
-type Team {
-    players: [LeaguePlayer] @relation
-    league: League
+
+type PuttingLeagueTeam {
+    players: [PuttingLeaguePlayer] @relation
+    league: PuttingLeague
 }
 
-type League {
+type PuttingLeague {
     date: Date
-    players: [LeaguePlayer] @relation
-    teams: [Team] @relation
+    players: [PuttingLeaguePlayer] @relation
+    teams: [PuttingLeagueTeam] @relation
 }
 
-type LeaguePlayer {
-    league: League
-    player: Player
-    team: Team
+type PuttingLeaguePlayer {
+    name: String
+    league: PuttingLeague
+    customer: Customer
+    team: PuttingLeagueTeam
     payment: PaymentStatusOptions
     checkedIn: Boolean
     wins: Int
 }
 
 type Query {
-    allLeagues: [League]
+    allPuttingLeagues: [PuttingLeague]
+    allCustomers: [Customer]
 }
