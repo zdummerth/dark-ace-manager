@@ -13,7 +13,7 @@ export default async function handler(req, res) {
 
 
         const response = await Shopify.Webhooks.Registry.register({
-            path: '/api/shopify/webhooks/process',
+            path: 'https://dark-ace-manager.vercel.app//api/shopify/webhooks/process',
             topic: 'PRODUCTS_CREATE',
             accessToken: shopKey,
             shop: shopName,

@@ -28,7 +28,7 @@ export default function Home({ userEmail }) {
       </button>
       {leagues && leagues.map(l => {
         return (
-          <Link href={`/league/${l._id}`}>
+          <Link href={`/league/${l._id}`} key={l._id}>
             <a>
               <div className="std-div alt-bg w-100 mtb-s">
                 <Flex jc='center' className='bg std-div w-100'>
