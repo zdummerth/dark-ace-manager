@@ -26,10 +26,20 @@ type PuttingLeagueTeam {
     league: PuttingLeague
 }
 
+enum LeagueStatus {
+    pending
+    checkin
+    active
+    complete
+}
+
 type PuttingLeague {
     date: Date
+    title: String
+    productId: String @unique
     players: [PuttingLeaguePlayer] @relation
     teams: [PuttingLeagueTeam] @relation
+    status: LeagueStatus
 }
 
 type PuttingLeaguePlayer {
@@ -44,5 +54,7 @@ type PuttingLeaguePlayer {
 
 type Query {
     allPuttingLeagues: [PuttingLeague]
+    allPuttingLeaguesByStatus(status: LeagueStatus): [PuttingLeague]
     allCustomers: [Customer]
+    findLeagueByProductID(productId: String): PuttingLeague
 }

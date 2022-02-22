@@ -10,7 +10,7 @@ const Container = styled(Flex)`
     // height: 100%;
 
     .suggestions {
-        height: 190px;
+        height: 250px;
         overflow: auto;
     }
 
@@ -21,23 +21,18 @@ const Container = styled(Flex)`
 
 const SearchUsers = ({
     onUserClick,
-    isInvite,
-    invites = [],
     className,
-    users,
-    checkedUsers
+    users = [],
+    checkedUsers = []
 }) => {
 
     // console.log('search users', users)
 
     const [value, setValue] = useState("")
 
-    const filteredUsers = isInvite ? users.filter(u =>
-        u.handle.includes(value) && value !== ""
-    ) :
-        users.filter(u => u.handle.includes(value))
+    const filteredUsers = users.filter(u => JSON.stringify(u).toLowerCase().includes(value.toLowerCase()))
 
-    // const filteredUsers = [...users, ...users]
+
     return (
         <Container
             dir='column'
@@ -54,15 +49,12 @@ const SearchUsers = ({
             <p className='mtb-s'>suggestions</p>
             <Flex className='w-100 suggestions std-div bg' dir='column'>
                 {filteredUsers.map((u, ind) => {
-                    const inviteSent = invites
-                        .find(inv => (
-                            inv.to._id === u._id
-                        ))
 
                     const checked = checkedUsers.includes(u._id)
                     return (
                         <Flex
                             key={u._id}
+                            dir='column'
                             jc='space-between'
                             className={`
                                     std-div
@@ -72,19 +64,26 @@ const SearchUsers = ({
                                     ${ind > 0 && 'mt-xs'}
                                 `}
                         >
-                            <div>@{u.handle}</div>
-                            {checked ? (
+                            <Flex jc='space-between' className='w-100 std-div alt-bg'>
+                                <div>{u.name}</div>
                                 <Flex>
-                                    <CheckDouble className='check' size='20' />
+                                    {checked ? (
+                                        <CheckDouble className='check' size='20' />
+                                    ) : (
+                                        <BlankButton
+                                            type='button'
+                                            id={u._id}
+                                            onClick={onUserClick}
+                                        >
+                                            add
+                                        </BlankButton>
+                                    )}
                                 </Flex>
-                            ) : (
-                                <BlankButton
-                                    type='button'
-                                    onClick={() => onUserClick(u._id)}
-                                >
-                                    {isInvite ? 'invite' : 'assign'}
-                                </BlankButton>
-                            )}
+                            </Flex>
+                            <Flex jc='space-between' className='w-100 mt-s std-div alt-bg'>
+                                <div>p: {u.phone}</div>
+                                <div>e: {u.email}</div>
+                            </Flex>
 
                         </Flex>
                     )
