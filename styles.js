@@ -212,6 +212,12 @@ export const GlobalStyle = createGlobalStyle`
     box-shadow: 0 0 5px 2px ${({ theme }) => theme.colors.text};
   }
 
+  button {
+    background: transparent;
+    border: none;
+    color: ${({ theme }) => theme.colors.text};
+  }
+
   input, textarea {
     border-radius: 10px;
     border: none;

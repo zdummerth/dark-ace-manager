@@ -22,6 +22,7 @@ type Customer {
 
 
 type PuttingLeagueTeam {
+    name: String
     players: [PuttingLeaguePlayer] @relation
     league: PuttingLeague
 }

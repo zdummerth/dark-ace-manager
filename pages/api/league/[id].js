@@ -1,4 +1,4 @@
-import { create, remove, getPuttingLeague } from 'lib/db/leagues'
+import { create, remove, getPuttingLeague, findPuttingLeagueByID } from 'lib/db/leagues'
 import { getLoginSession } from 'lib/auth/auth'
 
 export default async function handler(req, res) {
@@ -14,7 +14,7 @@ export default async function handler(req, res) {
             case 'GET': {
                 const { id } = req.query
 
-                const faunares = await getPuttingLeague({
+                const faunares = await findPuttingLeagueByID({
                     id,
                     secret: session.accessToken,
                 })
