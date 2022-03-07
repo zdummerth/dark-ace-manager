@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import Link from 'next/link'
 import Flex from 'components/shared/Flex'
 import { getLoginSession } from 'lib/auth/auth'
-import { useLeagues, useTwilio } from 'lib/hooks'
+import { useLeagues } from 'lib/hooks'
 // import ProjectList from 'components/projects/ProjectList'
 
 const Container = styled(Flex)`
@@ -12,7 +12,6 @@ const Container = styled(Flex)`
 
 export default function Home({ userEmail }) {
   const { leagues } = useLeagues()
-  const { sendMsg } = useTwilio()
 
   return (
     <Container dir='column' ai='center'>
@@ -20,12 +19,9 @@ export default function Home({ userEmail }) {
 
       <div className="std-div alt-bg w-100 mtb-s">
         <Flex jc='center' className='bg std-div w-100'>
-          <h2>all leagues</h2>
+          <h2>All leagues</h2>
         </Flex>
       </div>
-      <button onClick={sendMsg}>
-        send test text
-      </button>
       {leagues && leagues.map(l => {
         return (
           <Link href={`/league/${l._id}`} key={l._id}>

@@ -5,7 +5,8 @@ import twilio from 'twilio'
 export default async function handler(req, res) {
     console.log('in send sms function')
     // console.log('method: ', req.method)
-    // console.log('body: ', req.body)
+    console.log('body: ', req.body)
+    const numbers = ['+13146750275', '+13146408270']
 
     try {
         const session = await getLoginSession(req, 'auth_cookie_name')
@@ -14,16 +15,23 @@ export default async function handler(req, res) {
         const authToken = process.env.TWILIO_AUTH_TOKEN;
         const fromNumber = process.env.TWILIO_FROM_NUMBER;
         const client = twilio(accountSid, authToken);
+        const service = client.notify.services(process.env.TWILIO_PUTTING_LEAGUE_SERVICE_SID)
+
+        const bindings = numbers.map(number => {
+            return JSON.stringify({ binding_type: 'sms', address: number });
+        });
 
 
-        const data = await client.messages
+        const data = await service
+            .notifications
             .create({
-                body: 'This is the ship that made the Kessel Run in fourteen parsecs?',
-                from: fromNumber,
-                to: '+13146408270'
+                body: req.body.msg,
+                toBinding: bindings
             })
 
         console.log('sms response data', data)
+
+        // let data = { t: "d" }
         res.status(200).json(data)
 
     } catch (error) {
