@@ -9,14 +9,9 @@ import { findPuttingLeagueByID } from 'lib/db/leagues'
 
 const Container = styled(Flex)`
   width: 100%;
-  margin: 20px;
+  // margin: 20px;
+  height: 90vh;
 
-  .players-box {
-    max-width: 400px;
-  }
-  #checkbox {
-    width: 20px;
-  }
 `
 
 function LeaguePage({ leagueId, league }) {
@@ -30,8 +25,8 @@ function LeaguePage({ leagueId, league }) {
 
   return (
     <Container dir='column'>
-      <div className='std-div alt-bg mb-s'>{league?.title}</div>
       <Flex ai='center' jc='space-between' className='std-div w-100'>
+        <div className=''>{league?.title}</div>
         <button onClick={() => setView('teams')}>
           Teams
         </button>

@@ -5,13 +5,14 @@ import Navigation from 'components/layout/Navigation'
 import { GlobalStyle } from 'styles'
 
 const Container = styled(Flex)`
-    min-height: 100vh;
-    overflow: hidden;
-    max-width: 1400px;
+    // min-height: 100vh;
+    // overflow: hidden;
+    max-width: 500px;
+    // border: 1px solid gray;
 `
 
 const Content = styled(Flex)`
-    flex: 1;
+    // flex: 1;
     width: 100%;
 `
 
