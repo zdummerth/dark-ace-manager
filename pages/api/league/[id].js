@@ -1,4 +1,4 @@
-import { create, remove, getPuttingLeague, findPuttingLeagueByID } from 'lib/db/leagues'
+import { createPuttingLeague, deletePuttingLeague, findPuttingLeagueByID } from 'lib/db/leagues'
 import { getLoginSession } from 'lib/auth/auth'
 
 export default async function handler(req, res) {
@@ -28,14 +28,14 @@ export default async function handler(req, res) {
                     projectId,
                 } = req.body
 
-                const faunares = await create({
+                const faunares = await createPuttingLeague({
                     toId,
                     fromId: session.userId,
                     projectId,
                     secret: session.accessToken,
                 })
 
-                data = faunares.create
+                data = faunares.createPuttingLeague
                 break;
             }
             case 'PUT': {
@@ -54,12 +54,12 @@ export default async function handler(req, res) {
             }
             case 'DELETE': {
                 const { id } = req.query
-                const faunares = await remove({
+                const faunares = await deletePuttingLeague({
                     id,
                     secret: session.accessToken,
                 })
 
-                data = faunares.remove
+                data = faunares.deletePuttingLeague
                 break;
             }
             default:

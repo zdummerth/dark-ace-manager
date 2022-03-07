@@ -1,9 +1,7 @@
 import React, { useState } from 'react'
 import Flex from 'components/shared/Flex'
 import styled from 'styled-components'
-import { useLeague, useTwilio } from 'lib/hooks'
 import { getLoginSession } from 'lib/auth/auth'
-import Checkin from 'components/checkin/Checkin'
 import SearchUsers from 'components/SearchUsers'
 
 import { findPuttingLeagueByID } from 'lib/db/leagues'
