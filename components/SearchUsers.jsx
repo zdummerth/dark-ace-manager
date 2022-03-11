@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 // import Link from 'next/link'
 import styled from 'styled-components'
 import { useTwilio } from 'lib/hooks'
-import { CheckDouble, X } from '@styled-icons/boxicons-regular'
+import { CheckDouble, X, Album } from '@styled-icons/boxicons-regular'
 import Flex from 'components/shared/Flex'
 import { BlankButton } from './shared/Button'
 import dynamicSort from 'utils/dynamicSort'
@@ -22,24 +22,9 @@ const Container = styled(Flex)`
         color: ${({ theme }) => theme.colors.brand};
     }
 
-    .fixed {
-        // flex: 1;
-
-        // position: fixed;
-        // top: 0;
-        // left: 0;
-        // right: 0;
-        width: 100%;
-    }
-
     .selected-players {
         flex-wrap: wrap;
         width: 100%;
-    }
-
-    .selected-player {
-        flex: 1;
-        max-width: 33%;
     }
 
     .msg-form {
@@ -49,6 +34,16 @@ const Container = styled(Flex)`
         right: 0;
         width: 100%;
         height: 100%;
+        max-width: 500px;
+    }
+
+    .btn-container {
+        height: 45px;
+    }
+
+    .error {
+        font-size: 14px;
+        color: red;
     }
 `
 
@@ -61,7 +56,7 @@ const SearchUsers = ({
 }) => {
 
     // console.log('search users', users)
-    const { sendMsg } = useTwilio()
+    const { sendMsg, updating: twUpdating, error: twError, setState: setTwilioState, submitted } = useTwilio()
     const [msg, setMsg] = useState("")
     const [msgOpen, setMsgOpen] = useState(false)
     const [value, setValue] = useState("")
@@ -86,15 +81,17 @@ const SearchUsers = ({
         const numbers = getNumbers(isTeam, checked)
         console.log('numbers', numbers)
 
-        try {
-            await sendMsg({ msg, numbers })
-            setMsg('')
-            setMsgOpen(false)
-            setChecked([])
-        }
-        catch (e) {
-            console.log('submit error')
-        }
+        await sendMsg({ msg, numbers })
+    }
+
+    const handleCancel = () => {
+        setMsgOpen(false)
+        setMsg('')
+        setTwilioState({
+            updating: false,
+            error: false,
+            submitted: false
+        })
     }
 
     const handleChange = e => {
@@ -170,7 +167,7 @@ const SearchUsers = ({
                     )
                 })}
             </Flex>
-            <Flex dir='column' className={'fixed std-div alt-bg'}>
+            <Flex dir='column' className={'std-div alt-bg w-100'}>
                 {checked.length > 0 && (
                     <Flex ai='center' jc='space-between' className={'w-100 mt-s'}>
                         <button
@@ -185,7 +182,7 @@ const SearchUsers = ({
                 <Flex className={'selected-players'}>
                     {checked.sort(dynamicSort('name')).map(checkedPlayer => {
                         return (
-                            <Flex ai='center' className='std-div border bg selected-player' key={checkedPlayer._id}>
+                            <Flex ai='center' jc='space-between' className='std-div border bg w-100' key={checkedPlayer._id}>
                                 <div>
                                     {checkedPlayer.name}
                                 </div>
@@ -213,23 +210,57 @@ const SearchUsers = ({
                                     onChange={(e) => setMsg(e.target.value)}
                                 />
                             </div>
+                            {twError && (
+                                <div className="std-div error mb-s">
+                                    There was an error sending message. Please try again.
+                                </div>
+                            )}
+                            <Flex ai='center' className={'btn-container'}>
+                                {twUpdating ? (
+                                    <Album size='20' className="c-brand ml-xs rotate" />
+                                ) : (
+                                    <>
+                                        {submitted ? (
+                                            <>
+                                                <div className='std-div'>
+                                                    Your message sent. Go back to league
+                                                </div>
+                                                <button
+                                                    type='button'
+                                                    onClick={handleCancel}
+                                                    className='std-div mb-s'
+                                                    disabled={twUpdating}
+                                                >
+                                                    Back
+                                                </button>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <button
+                                                    type='submit'
+                                                    className='std-div active mb-s'
+                                                    disabled={twUpdating}
+                                                >
+                                                    Send
+                                                </button>
+                                                <button
+                                                    type='button'
+                                                    onClick={handleCancel}
+                                                    className='std-div mb-s'
+                                                    disabled={twUpdating}
+                                                >
+                                                    Cancel
+                                                </button>
+                                            </>
+                                        )}
 
-                            <Flex>
-                                <button
-                                    type='submite'
-                                    className='std-div active mb-s'
-                                >
-                                    Send
-                                </button>
-                                <button
-                                    type='button'
-                                    onClick={() => setMsgOpen(false)}
-                                    className='std-div mb-s'
-                                >
-                                    Cancel
-                                </button>
+
+                                    </>
+                                )}
+
                             </Flex>
                             <div className="std-div w-100 alt-bg mt-s">
+                                <div className="std-div">Recipients</div>
                                 {checked.sort(dynamicSort('name')).map(checkedPlayer => {
                                     return (
                                         <Flex ai='center' jc='space-between' className='std-div border bg w-100' key={checkedPlayer._id}>
@@ -250,9 +281,10 @@ const SearchUsers = ({
                             </div>
                         </Flex>
                     </form>
-                )}
-            </Flex>
-        </Container>
+                )
+                }
+            </Flex >
+        </Container >
     )
 }
 
