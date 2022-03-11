@@ -31,7 +31,6 @@ export default async function handler(req, res) {
 
         console.log('sms response data', data)
 
-        // let data = { t: "d" }
         res.status(200).json(data)
 
     } catch (error) {

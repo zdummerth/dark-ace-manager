@@ -175,6 +175,33 @@ export const GlobalStyle = createGlobalStyle`
     padding: 10px;
   }
 
+  .flex-c-c {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .flex-ai-c {
+    display: flex;
+    align-items: center;
+  }
+
+  .flex {
+    display: flex;
+  }
+
+  .flex-1 {
+    flex: 1;
+  }
+
+  .fl-wrap {
+    flex-wrap: wrap;
+  }
+
+  .fd-col {
+    flex-direction: column;
+  }
+
   .w-100 { width: 100%; }
 
   .m-xxs { margin: 2.5px; }
@@ -186,8 +213,11 @@ export const GlobalStyle = createGlobalStyle`
   .ml-xs { margin-left: 5px; }
 
   .mt-xs { margin-top: 5px; }
-
   .mt-s { margin-top: 10px; }
+
+  .mr-s { margin-right: 10px; }
+  .ml-s { margin-left: 10px; }
+
 
   .mtb-s {
     margin-top: 10px;
@@ -200,6 +230,7 @@ export const GlobalStyle = createGlobalStyle`
   .c-delete { color: red; }
 
   .border { border: 1px solid gray; }
+  .border-top { border-top: 1px solid gray; }
 
   .rotate { animation: ${rotate360} 1s linear infinite; }
 

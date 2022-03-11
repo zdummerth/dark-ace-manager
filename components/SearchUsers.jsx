@@ -1,6 +1,7 @@
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 // import Link from 'next/link'
 import styled from 'styled-components'
+import SendSmsForm from './forms/SendSmsForm'
 import { useTwilio } from 'lib/hooks'
 import { CheckDouble, X, Album } from '@styled-icons/boxicons-regular'
 import Flex from 'components/shared/Flex'
@@ -13,18 +14,14 @@ const Container = styled(Flex)`
     position: relative;
 
     .suggestions {
-        // height: 550px;
         flex: 1;
+        max-height: 50vh;
         overflow: auto;
     }
 
+
     .check {
         color: ${({ theme }) => theme.colors.brand};
-    }
-
-    .selected-players {
-        flex-wrap: wrap;
-        width: 100%;
     }
 
     .msg-form {
@@ -57,14 +54,23 @@ const SearchUsers = ({
 
     // console.log('search users', users)
     const { sendMsg, updating: twUpdating, error: twError, setState: setTwilioState, submitted } = useTwilio()
-    const [msg, setMsg] = useState("")
     const [msgOpen, setMsgOpen] = useState(false)
     const [value, setValue] = useState("")
     const [checked, setChecked] = useState([])
     console.log('checked users', checked)
 
-    const handleSubmit = async (e) => {
-        e.preventDefault()
+    const searchInputRef = useRef()
+
+    const handleCancel = () => {
+        setMsgOpen(false)
+        setTwilioState({
+            updating: false,
+            error: false,
+            submitted: false
+        })
+    }
+
+    const handleSubmit = async ({ message }) => {
         const getNumbers = (isTeam, arr) => {
             const numbers = []
             arr.forEach(element => {
@@ -81,37 +87,27 @@ const SearchUsers = ({
         const numbers = getNumbers(isTeam, checked)
         console.log('numbers', numbers)
 
-        await sendMsg({ msg, numbers })
+        await sendMsg({ msg: message, numbers })
     }
 
-    const handleCancel = () => {
-        setMsgOpen(false)
-        setMsg('')
-        setTwilioState({
-            updating: false,
-            error: false,
-            submitted: false
-        })
-    }
 
     const handleChange = e => {
         // console.log('checked: ', e.target.value)
-        // const playerId = e.target.value
-        // console.log('playerId: ', playerId)
-        const player = users.find(p => p._id === e.currentTarget.value)
-        console.log('player: ', player)
-        // console.log('player: ', e.currentTarget.value)
 
+        const player = users.find(p => p._id === e.currentTarget.value)
 
         if (checked.find(p => p._id === player._id)) {
             setChecked(
                 checked.filter(c => c._id !== player._id)
             )
+            searchInputRef.current?.focus()
         } else {
             setChecked([
                 ...checked,
                 player
             ])
+            searchInputRef.current?.focus()
+
         }
     }
 
@@ -124,167 +120,118 @@ const SearchUsers = ({
             flex='1'
             className={className}
         >
-            <div className="std-div alt-bg w-100 mb-s">
-                <input
-                    name='invites'
-                    id='invites'
-                    placeholder={`search ${isTeam ? 'teams' : 'players'}`}
-                    value={value}
-                    onChange={(e) => setValue(e.target.value)}
-                />
-            </div>
-            {/* <p className='mtb-s'>suggestions</p> */}
-            <Flex className='w-100 suggestions std-div alt-bg' dir='column'>
-                {filteredUsers.sort(dynamicSort('name')).map((u, ind) => {
+            {msgOpen ? (
+                <>
+                    <Flex ai='center' dir='column' className={'w-100 mt-s msg-form bg'}>
+                        <div className="std-div alt-bg w-100 mtb-s">
+                            <SendSmsForm
+                                onCancel={handleCancel}
+                                updating={twUpdating}
+                                onSubmit={handleSubmit}
+                            />
+                        </div>
 
-                    const isChecked = checked.find(p => p._id === u._id)
-                    return (
-                        <Flex jc='space-between' key={u._id} className='w-100 std-div bg mb-s'>
-                            <div>{u.name}</div>
-                            <Flex>
-                                {isChecked ? (
-                                    <BlankButton
-                                        type='button'
-                                        id={u._id}
-                                        value={u._id}
-                                        onClick={handleChange}
-                                    >
-                                        <CheckDouble className='check' size='20' />
-                                    </BlankButton>
-                                ) : (
-                                    <BlankButton
-                                        type='button'
-                                        id={u._id}
-                                        value={u._id}
-                                        onClick={handleChange}
-                                    >
-                                        add
-                                    </BlankButton>
-                                )}
-                            </Flex>
+                        <PlayerList
+                            players={checked}
+                            checked={checked}
+                            handleChange={handleChange}
+                            childClassName={'alt-div-1 border bg ml-xs mt-xs'}
+                            className={'flex-ai-c fl-wrap std-div w-100 alt-bg mt-s'}
+                            title={'To:'}
+                        />
+                    </Flex>
+                </>
+            ) : (
+                <>
+                    <div className="std-div alt-bg w-100 mb-s">
+                        <input
+                            name='players'
+                            id='players'
+                            ref={searchInputRef}
+                            placeholder={`search ${isTeam ? 'teams' : 'players'}`}
+                            value={value}
+                            onChange={(e) => setValue(e.target.value)}
+                        />
+                    </div>
+                    <PlayerList
+                        players={filteredUsers.sort(dynamicSort('name'))}
+                        checked={checked}
+                        handleChange={handleChange}
+                        childClassName={'std-div w-100 border bg mt-xs'}
+                        className={'suggestions flex fd-col std-div w-100 alt-bg mt-s'}
+                    />
+                </>
+            )}
 
-                        </Flex>
-                    )
-                })}
-            </Flex>
-            <Flex dir='column' className={'std-div alt-bg w-100'}>
-                {checked.length > 0 && (
+            {checked.length > 0 && (
+                <Flex dir='column' className={'std-div w-100 mt-s border-top'}>
                     <Flex ai='center' jc='space-between' className={'w-100 mt-s'}>
                         <button
                             type='button'
                             onClick={() => setMsgOpen(true)}
                             className='std-div active mb-s'
                         >
-                            Send Message
+                            Create Message
                         </button>
                     </Flex>
-                )}
-                <Flex className={'selected-players'}>
-                    {checked.sort(dynamicSort('name')).map(checkedPlayer => {
-                        return (
-                            <Flex ai='center' jc='space-between' className='std-div border bg w-100' key={checkedPlayer._id}>
-                                <div>
-                                    {checkedPlayer.name}
-                                </div>
-                                <BlankButton
-                                    type='button'
-                                    id={checkedPlayer._id}
-                                    value={checkedPlayer._id}
-                                    onClick={handleChange}
-                                >
-                                    <X size='22' />
-                                </BlankButton>
-                            </Flex>
-                        )
-                    })}
-                </Flex>
-                {msgOpen && (
-                    <form onSubmit={handleSubmit}>
-                        <Flex ai='center' dir='column' className={'w-100 mt-s msg-form bg'}>
-                            <div className="std-div alt-bg w-100 mtb-s">
-                                <input
-                                    name='msg'
-                                    id='msg'
-                                    placeholder='message'
-                                    value={msg}
-                                    onChange={(e) => setMsg(e.target.value)}
-                                />
-                            </div>
-                            {twError && (
-                                <div className="std-div error mb-s">
-                                    There was an error sending message. Please try again.
-                                </div>
-                            )}
-                            <Flex ai='center' className={'btn-container'}>
-                                {twUpdating ? (
-                                    <Album size='20' className="c-brand ml-xs rotate" />
-                                ) : (
-                                    <>
-                                        {submitted ? (
-                                            <>
-                                                <div className='std-div'>
-                                                    Your message sent. Go back to league
-                                                </div>
-                                                <button
-                                                    type='button'
-                                                    onClick={handleCancel}
-                                                    className='std-div mb-s'
-                                                    disabled={twUpdating}
-                                                >
-                                                    Back
-                                                </button>
-                                            </>
-                                        ) : (
-                                            <>
-                                                <button
-                                                    type='submit'
-                                                    className='std-div active mb-s'
-                                                    disabled={twUpdating}
-                                                >
-                                                    Send
-                                                </button>
-                                                <button
-                                                    type='button'
-                                                    onClick={handleCancel}
-                                                    className='std-div mb-s'
-                                                    disabled={twUpdating}
-                                                >
-                                                    Cancel
-                                                </button>
-                                            </>
-                                        )}
+                    <PlayerList
+                        players={checked}
+                        checked={checked}
+                        handleChange={handleChange}
+                        childClassName={'alt-div-1 border bg ml-xs mt-xs'}
+                        className={'flex-ai-c fl-wrap std-div w-100 alt-bg mt-s'}
+                        title={'To:'}
+                    />
+                </Flex >
 
-
-                                    </>
-                                )}
-
-                            </Flex>
-                            <div className="std-div w-100 alt-bg mt-s">
-                                <div className="std-div">Recipients</div>
-                                {checked.sort(dynamicSort('name')).map(checkedPlayer => {
-                                    return (
-                                        <Flex ai='center' jc='space-between' className='std-div border bg w-100' key={checkedPlayer._id}>
-                                            <div>
-                                                {checkedPlayer.name}
-                                            </div>
-                                            <BlankButton
-                                                type='button'
-                                                id={checkedPlayer._id}
-                                                value={checkedPlayer._id}
-                                                onClick={handleChange}
-                                            >
-                                                <X size='22' />
-                                            </BlankButton>
-                                        </Flex>
-                                    )
-                                })}
-                            </div>
-                        </Flex>
-                    </form>
-                )
-                }
-            </Flex >
+            )}
         </Container >
+    )
+}
+
+const PlayerList = ({
+    players,
+    title,
+    handleChange,
+    className,
+    childClassName,
+    checked = []
+}) => {
+
+    return (
+        <div className={`${className}`}>
+            {title && (
+                <div className="std-div">{title}</div>
+            )}
+            {players.sort(dynamicSort('name')).map(player => {
+                const isChecked = checked.find(p => p._id === player._id)
+
+                return (
+                    <Flex
+                        ai='center'
+                        jc='space-between'
+                        className={`${childClassName}`}
+                        key={player._id}>
+
+                        <div>
+                            {player.name}
+                        </div>
+                        <BlankButton
+                            type='button'
+                            id={player._id}
+                            value={player._id}
+                            onClick={handleChange}
+                        >
+                            {isChecked ? (
+                                <X size='18' />
+                            ) : (
+                                <div>add</div>
+                            )}
+                        </BlankButton>
+                    </Flex>
+                )
+            })}
+        </div>
     )
 }
 
