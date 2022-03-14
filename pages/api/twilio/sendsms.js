@@ -5,8 +5,8 @@ export default async function handler(req, res) {
     console.log('in send sms function')
     // console.log('method: ', req.method)
     console.log('body: ', req.body)
-    // const numbers = req.body.numbers
-    const numbers = ['+13146408270']
+    const numbers = req.body.numbers
+    // const numbers = ['+13146408270']
 
     try {
         const session = await getLoginSession(req, 'auth_cookie_name')

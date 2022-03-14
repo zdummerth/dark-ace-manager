@@ -70,6 +70,12 @@ const SearchUsers = ({
         })
     }
 
+    if (submitted) {
+        handleCancel()
+        setChecked([])
+        setValue('')
+    }
+
     const handleSubmit = async ({ message }) => {
         const getNumbers = (isTeam, arr) => {
             const numbers = []
@@ -128,6 +134,7 @@ const SearchUsers = ({
                                 onCancel={handleCancel}
                                 updating={twUpdating}
                                 onSubmit={handleSubmit}
+                                error={twError}
                             />
                         </div>
 

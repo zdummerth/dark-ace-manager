@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form"
 import { Album } from '@styled-icons/boxicons-regular'
 
 
-export default function SendSmsForm({ onCancel, updating, onSubmit }) {
+export default function SendSmsForm({ onCancel, updating, onSubmit, error }) {
 
   const { register, handleSubmit, formState: { errors } } = useForm();
 
@@ -16,6 +16,8 @@ export default function SendSmsForm({ onCancel, updating, onSubmit }) {
           required: true,
         })} />
         {errors.message && <span className="mt-s error">Message is required</span>}
+        {error && <span className="mt-s error">Failed to send. Try again</span>}
+
       </div>
       <button className="active std-div mt-s">
         {updating ? (
